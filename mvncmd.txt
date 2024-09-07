@@ -1,0 +1,4 @@
+mvn -v 
+Cntrl + ` for terminal
+
+mvn clean install 
