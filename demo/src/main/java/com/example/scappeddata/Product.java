@@ -28,12 +28,4 @@ public class Product extends Object{ //every class implicitly extends Object
 				+ "\"name\":\"" + name + "\", " 
 				+ "\"price\": \"" + price + "\" }"; 
 	} 
-  //add funcitons ?
-
 }
-
-
-//theory
-
-//toString() is a method that is already defined in Java. It is part of the Object class, which is the root class for all Java objects.
-// Since every class in Java implicitly extends Object, the toString() method is available in every class.

@@ -2,68 +2,69 @@ package com.example;
 
 import java.util.*;
 import java.io.IOException;
-
-import org.jsoup.*; 
-import org.jsoup.nodes.*; 
+import org.jsoup.*;
+import org.jsoup.nodes.*;
 import org.jsoup.select.*;
-
 import com.example.scappeddata.Product;
 
-
-
 public class Main {
+    private static Document doc;
+
     public static void main(String[] args) {
-            // initializing the HTML Document page variable 
-    Document doc;
-
-    //fetching the target website
-    try {
-        doc = Jsoup.connect("https://www.scrapingcourse.com/ecommerce/")
-        .userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36")
-        .header("Accept-Language", "*")
-        .get();
-        //if the connection fails, Jsoup throws a IOException
-    }catch(IOException e) {
-        throw new RuntimeException(e);
+        initializeDocument();
+        interactiveTester();
     }
-    //class has to be in the same package to be retrieved
-    List<Product> products = new ArrayList<>(); 
 
+    private static void initializeDocument() {
+        try {
+            doc = Jsoup.connect(ConfigLoader.getProperty("base_url"))
+                .userAgent(ConfigLoader.getProperty("user_agent"))
+                .header("Accept-Language", ConfigLoader.getProperty("accept_language"))
+                .get();
+        } catch(IOException e) {
+            throw new RuntimeException("Failed to connect to the website", e);
+        }
+    }
 
-    //The .select() method is used to select elements from the HTML document based on a CSS selector.
-    Elements productElements = doc.select("li.product");
-    //Elements is essentially an extension of ArrayList in Java. It stores a collection of HTML elements (in this case, <li class="product"> elements).
-    //if connnection is made , then get() is gauranteed 
+    private static void interactiveTester() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("\nEnter a CSS selector (or 'quit' to exit):");
+            String selector = scanner.nextLine();
 
-    for(Element productElement : productElements)
-    {   
-        //matched element with a given class
-        Product product = new Product();
-        //initialisign the products
-        //setters
-        product.setURL(productElement.selectFirst("a").attr("href"));
-        product.setImage(productElement.selectFirst("img").attr("src"));
-        product.setName(productElement.selectFirst("h2").text());
-        product.setPrice(productElement.selectFirst("span").text());
+            if (selector.equalsIgnoreCase("quit")) {
+                break;
+            }
 
-        products.add(product);
-        //selectFirst() kaha se aa gya
+            try {
+                Elements elements = doc.select(selector);
+                System.out.println("Found " + elements.size() + " elements:");
+                for (Element element : elements) {
+                    System.out.println(element.outerHtml());
+                }
+            } catch (Exception e) {
+                System.out.println("Error with selector: " + e.getMessage());
+            }
+        }
+        scanner.close();
+    }
 
-        for(Product pr : products)
-        {
-            System.out.println(pr);
+    private static void scrapeProducts() {
+        List<Product> products = new ArrayList<>();
+        Elements productElements = doc.select("li.product");
+        
+        for(Element productElement : productElements) {
+            Product product = new Product();
+            product.setURL(productElement.selectFirst("a").attr("href"));
+            product.setImage(productElement.selectFirst("img").attr("src"));
+            product.setName(productElement.selectFirst("h2").text());
+            product.setPrice(productElement.selectFirst("span").text());
+            products.add(product);
         }
 
-    }
-
+        // Print or process the products as needed
+        for (Product product : products) {
+            System.out.println(product);
+        }
     }
 }
-//website have anti scraping system 1] set of expected HTTP header 
-//avoid being blocked using manually setting these HTTP headers
-//Jsoup.connect(xxx) is not using HTTP ? 
-
-//you should always set is the User-Agent header.
-//This is a string that helps the server identifies the application[browser], operating system, and vendor from which the HTTP request comes from.
-
-//Jsoup & browser both are a type of HTTP client - Jsoup is programitcally controlled
-//.get() returns the paresed HTML
