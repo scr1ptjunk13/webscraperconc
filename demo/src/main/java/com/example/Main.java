@@ -49,22 +49,22 @@ public class Main {
         scanner.close();
     }
 
-    private static void scrapeProducts() {
-        List<Product> products = new ArrayList<>();
-        Elements productElements = doc.select("li.product");
+    // private static void scrapeProducts() {
+    //     List<Product> products = new ArrayList<>();
+    //     Elements productElements = doc.select("li.product");
         
-        for(Element productElement : productElements) {
-            Product product = new Product();
-            product.setURL(productElement.selectFirst("a").attr("href"));
-            product.setImage(productElement.selectFirst("img").attr("src"));
-            product.setName(productElement.selectFirst("h2").text());
-            product.setPrice(productElement.selectFirst("span").text());
-            products.add(product);
-        }
+    //     for(Element productElement : productElements) {
+    //         Product product = new Product();
+    //         product.setURL(productElement.selectFirst("a").attr("href"));
+    //         product.setImage(productElement.selectFirst("img").attr("src"));
+    //         product.setName(productElement.selectFirst("h2").text());
+    //         product.setPrice(productElement.selectFirst("span").text());
+    //         products.add(product);
+    //     }
 
-        // Print or process the products as needed
-        for (Product product : products) {
-            System.out.println(product);
-        }
-    }
+    //     // Print or process the products as needed
+    //     for (Product product : products) {
+    //         System.out.println(product);
+    //     }
+    // }
 }
